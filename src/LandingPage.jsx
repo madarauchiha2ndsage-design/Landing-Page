@@ -263,28 +263,28 @@ const LandingPage = ({ onNavigate }) => {
                     <div className="card">
                         <section className='animated-section' ref={section1Ref}>
                              <p>We offer all types of tours by air.</p>
-                             <img className='vehicle' src={plane} alt="" />
+                             <div className='vehicle plane' alt="" />
                         </section>
                     </div>
 
                     <div className="card">
                         <section className='animated-section' ref={section2Ref}>
                              <p>Explore the world by land with our exclusive packages.</p>
-                             <img className='vehicle' src={car} alt="" />
+                             <div className='vehicle bus' alt="" />
                         </section>
                     </div>
 
                     <div className="card">
                         <section className='animated-section' ref={section3Ref}>
                              <p>Sail the seas on an unforgettable cruise.</p>
-                             <img className='vehicle' src={bus} alt="" />
+                             <div className='vehicle car' alt="" />
                         </section>
                     </div>
 
                     <div className="card">
                         <section className='animated-section' ref={section4Ref}>
                              <p>Your adventure is just a booking away.</p>
-                             <img className='vehicle' src={ship} alt="" />
+                             <div className='vehicle ship' alt="" />
                         </section>
                     </div>
                     {/* ==================================================================== */}

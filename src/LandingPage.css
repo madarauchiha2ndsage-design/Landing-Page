@@ -235,7 +235,32 @@
 .vehicle {
   margin-top: 2vh;
   width: 50vw;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 10vh;
+  margin: auto;
 }
+
+.plane
+{
+  background-image: url('./assets/plane.png');
+}
+
+.bus
+{
+  background-image: url('./assets/bus.png');
+}
+
+.car
+{
+  background-image: url('./assets/car.png');
+}
+
+.ship
+{
+  background-image: url('./assets/ship.png');
+}
+
 
 .animated-section {
   transform: translateX(100vw);
