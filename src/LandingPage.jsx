@@ -12,12 +12,12 @@ const LandingPage = ({ onNavigate }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const blinkIntervalRef = useRef(null);
 
-    // Refs for horizontal scrolling
+    // Refs for scrolling
     const slidesContainerRef = useRef(null);
     const currentIndexRef = useRef(0);
     const isScrollingRef = useRef(false);
     const touchStartX = useRef(0);
-    const touchStartY = useRef(0); // Added for vertical swipe detection
+    const touchStartY = useRef(0);
     const totalSlides = 5;
 
     // Blinking effect for the face
@@ -120,7 +120,7 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
-    // Horizontal/Vertical scroll and touch logic
+    // Scroll and touch logic
     useEffect(() => {
         const changeSlide = (direction) => {
             if (isScrollingRef.current) return;
@@ -144,19 +144,31 @@ const LandingPage = ({ onNavigate }) => {
             if (isScrollingRef.current) return;
 
             const scrollValue = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
-            if (scrollValue > 0) {
-                changeSlide(1);
-            } else {
-                changeSlide(-1);
-            }
+            changeSlide(scrollValue > 0 ? 1 : -1);
         };
-
+        
         // ====================================================================
-        // START CHANGE: Update touch handlers for vertical and horizontal swipes
+        // START CHANGE: Update touch handlers to prevent native browser interference
         // ====================================================================
         const handleTouchStart = (event) => {
             touchStartX.current = event.touches[0].clientX;
             touchStartY.current = event.touches[0].clientY;
+        };
+
+        const handleTouchMove = (event) => {
+            // This function prevents the browser's default pull-to-refresh or vertical
+            // scroll action when the user is swiping vertically.
+            if (!touchStartX.current || !touchStartY.current) {
+                return;
+            }
+            const touchCurrentX = event.touches[0].clientX;
+            const touchCurrentY = event.touches[0].clientY;
+            const swipeDistanceX = Math.abs(touchStartX.current - touchCurrentX);
+            const swipeDistanceY = Math.abs(touchStartY.current - touchCurrentY);
+
+            if (swipeDistanceY > swipeDistanceX) {
+                event.preventDefault();
+            }
         };
 
         const handleTouchEnd = (event) => {
@@ -167,40 +179,41 @@ const LandingPage = ({ onNavigate }) => {
             const swipeDistanceX = touchStartX.current - touchEndX;
             const swipeDistanceY = touchStartY.current - touchEndY;
 
-            // Determine if the swipe was primarily horizontal or vertical
             if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
-                // Horizontal swipe
                 if (Math.abs(swipeDistanceX) > 50) {
                     changeSlide(swipeDistanceX > 0 ? 1 : -1);
                 }
             } else {
-                // Vertical swipe
                 if (Math.abs(swipeDistanceY) > 50) {
                     changeSlide(swipeDistanceY > 0 ? 1 : -1);
                 }
             }
+            // Reset start coordinates
+            touchStartX.current = 0;
+            touchStartY.current = 0;
         };
-        // ====================================================================
-        // END CHANGE
-        // ====================================================================
-
+        
         window.addEventListener('wheel', handleWheel, { passive: false });
-        window.addEventListener('touchstart', handleTouchStart);
+        // Add passive: false to touchstart and touchmove to allow preventDefault
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
         window.addEventListener('touchend', handleTouchEnd);
 
         return () => {
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };
+        // ====================================================================
+        // END CHANGE
+        // ====================================================================
     }, []);
 
     return (
         <div className="landing-page-wrapper">
             <div className="clouds"></div>
-
             <div className="slides-container" ref={slidesContainerRef}>
-                {/* Slide 1: Hero Section */}
                 <div className="slide hero-slide">
                     <div className="top">
                         <span>Smiles World</span>
@@ -225,32 +238,24 @@ const LandingPage = ({ onNavigate }) => {
                         </div>
                     </main>
                 </div>
-
-                {/* Slide 2: Air Tours */}
                 <div className="slide">
                     <section className='info-section'>
                         <p>We offer all types of tours by air.</p>
                         <div className='vehicle plane' />
                     </section>
                 </div>
-
-                {/* Slide 3: Land Tours */}
                 <div className="slide">
                     <section className='info-section'>
                         <p>Explore the world by land with our exclusive packages.</p>
                         <div className='vehicle bus' />
                     </section>
                 </div>
-
-                {/* Slide 4: Sea Tours */}
                 <div className="slide">
                     <section className='info-section'>
                         <p>Sail the seas on an unforgettable cruise.</p>
                         <div className='vehicle ship' />
                     </section>
                 </div>
-
-                {/* Slide 5: Booking */}
                 <div className="slide">
                     <section className='info-section'>
                         <p>Your adventure is just a booking away.</p>
@@ -258,7 +263,6 @@ const LandingPage = ({ onNavigate }) => {
                     </section>
                 </div>
             </div>
-
             <div className="btn">
                 <button onClick={onNavigate}>Book Now</button>
             </div>
