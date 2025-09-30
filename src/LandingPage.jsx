@@ -2,11 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import './LandingPage.css';
 import smile from './assets/smile.png';
 import logo from './assets/logo.png';
-// Vehicle image imports are no longer needed here as they are handled by CSS background-image
-// import plane from './assets/plane.png';
-// import ship from './assets/ship.png';
-// import car from './assets/car.png';
-// import bus from './assets/bus.png';
 
 const LandingPage = ({ onNavigate }) => {
     const ball1Ref = useRef(null);
@@ -17,19 +12,14 @@ const LandingPage = ({ onNavigate }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const blinkIntervalRef = useRef(null);
 
-    // ====================================================================
-    // START CHANGE 1: Setup refs for horizontal scrolling
-    // ====================================================================
-    const slidesContainerRef = useRef(null); // Ref for the container that will move
-    const currentIndexRef = useRef(0); // Start at the first slide (index 0)
-    const isScrollingRef = useRef(false); // Throttle scroll/swipe events
-    const touchStartX = useRef(0); // For tracking touch swipe start position
+    // Refs for horizontal scrolling
+    const slidesContainerRef = useRef(null);
+    const currentIndexRef = useRef(0);
+    const isScrollingRef = useRef(false);
+    const touchStartX = useRef(0);
     const totalSlides = 5; // 1 hero slide + 4 info slides
-    // ====================================================================
-    // END CHANGE 1
-    // ====================================================================
 
-    // Blinking effect for the face - no changes needed
+    // Blinking effect for the face
     useEffect(() => {
         const blinkAction = () => {
             setIsBlinking(true);
@@ -45,9 +35,8 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
-    // Idle mouse effect for the face - no changes needed
+    // Idle mouse effect for the face
     useEffect(() => {
-        // ... (This entire useEffect block for idle animation remains unchanged)
         const balls = [ball1Ref.current, ball2Ref.current];
         const faceContainer = faceRef.current;
         if (!balls[0] || !balls[1] || !faceContainer) return;
@@ -89,9 +78,8 @@ const LandingPage = ({ onNavigate }) => {
         return () => clearTimeout(idleActionRef.current);
     }, [isIdle]);
 
-    // Mouse move effect for the face - no changes needed
+    // Mouse move effect for the face
     useEffect(() => {
-        // ... (This entire useEffect block for mouse move remains unchanged)
         const balls = [ball1Ref.current, ball2Ref.current];
         const faceContainer = faceRef.current;
         const faceMoveScale = 0.2;
@@ -131,9 +119,7 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
-    // ====================================================================
-    // START CHANGE 2: Replace vertical scroll logic with horizontal scroll and touch logic
-    // ====================================================================
+    // Horizontal scroll and touch logic
     useEffect(() => {
         const changeSlide = (direction) => {
             if (isScrollingRef.current) return;
@@ -148,38 +134,42 @@ const LandingPage = ({ onNavigate }) => {
                 }
                 setTimeout(() => {
                     isScrollingRef.current = false;
-                }, 800); // Cooldown to prevent spamming
+                }, 800);
             }
         };
 
         const handleWheel = (event) => {
-            // Use deltaY for vertical scroll and deltaX for horizontal (e.g., trackpads)
+            event.preventDefault();
+            
+            if (isScrollingRef.current) return;
+
             const scrollValue = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
-            if (scrollValue > 0) { // Scrolled down or right
+            if (scrollValue > 0) {
                 changeSlide(1);
-            } else { // Scrolled up or left
+            } else {
                 changeSlide(-1);
             }
         };
-        
+
         const handleTouchStart = (event) => {
             touchStartX.current = event.touches[0].clientX;
         };
-        
+
         const handleTouchEnd = (event) => {
+            if (isScrollingRef.current) return;
             const touchEndX = event.changedTouches[0].clientX;
             const swipeDistance = touchStartX.current - touchEndX;
 
-            if (Math.abs(swipeDistance) > 50) { // Swipe threshold
-                if (swipeDistance > 0) { // Swiped left
+            if (Math.abs(swipeDistance) > 50) {
+                if (swipeDistance > 0) {
                     changeSlide(1);
-                } else { // Swiped right
+                } else {
                     changeSlide(-1);
                 }
             }
         };
 
-        window.addEventListener('wheel', handleWheel);
+        window.addEventListener('wheel', handleWheel, { passive: false });
         window.addEventListener('touchstart', handleTouchStart);
         window.addEventListener('touchend', handleTouchEnd);
 
@@ -188,18 +178,12 @@ const LandingPage = ({ onNavigate }) => {
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, []); // Empty dependency array ensures this runs only once
-    // ====================================================================
-    // END CHANGE 2
-    // ====================================================================
+    }, []);
 
     return (
         <div className="landing-page-wrapper">
             <div className="clouds"></div>
 
-            {/* ==================================================================== */}
-            {/* START CHANGE 3: Restructure JSX for a horizontal slide layout */}
-            {/* ==================================================================== */}
             <div className="slides-container" ref={slidesContainerRef}>
                 {/* Slide 1: Hero Section */}
                 <div className="slide hero-slide">
@@ -230,39 +214,36 @@ const LandingPage = ({ onNavigate }) => {
                 {/* Slide 2: Air Tours */}
                 <div className="slide">
                     <section className='info-section'>
-                         <p>We offer all types of tours by air.</p>
-                         <div className='vehicle plane' />
+                        <p>We offer all types of tours by air.</p>
+                        <div className='vehicle plane' />
                     </section>
                 </div>
 
                 {/* Slide 3: Land Tours */}
                 <div className="slide">
                     <section className='info-section'>
-                         <p>Explore the world by land with our exclusive packages.</p>
-                         <div className='vehicle bus' />
+                        <p>Explore the world by land with our exclusive packages.</p>
+                        <div className='vehicle bus' />
                     </section>
                 </div>
-                
+
                 {/* Slide 4: Sea Tours */}
                 <div className="slide">
                     <section className='info-section'>
-                         <p>Sail the seas on an unforgettable cruise.</p>
-                         <div className='vehicle ship' />
+                        <p>Sail the seas on an unforgettable cruise.</p>
+                        <div className='vehicle ship' />
                     </section>
                 </div>
 
                 {/* Slide 5: Booking */}
                 <div className="slide">
                     <section className='info-section'>
-                         <p>Your adventure is just a booking away.</p>
-                         <div className='vehicle car' />
+                        <p>Your adventure is just a booking away.</p>
+                        <div className='vehicle car' />
                     </section>
                 </div>
             </div>
-            {/* ==================================================================== */}
-            {/* END CHANGE 3 */}
-            {/* ==================================================================== */}
-            
+
             <div className="btn">
                 <button onClick={onNavigate}>Book Now</button>
             </div>

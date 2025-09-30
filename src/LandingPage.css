@@ -1,21 +1,20 @@
-/* ============================================== */
 /* Main Layout Styles */
-/* ============================================== */
 .landing-page-wrapper {
   height: 100vh;
-  /* overflow: hidden is crucial to prevent native scrollbars */
   overflow: hidden;
   position: relative;
-  background-color: rgb(88, 180, 255); /* Background color for empty space */
+  background-color: rgb(88, 180, 255);
 }
 
 .slides-container {
   display: flex;
   height: 100vh;
-  /* 5 slides * 100vw each = 500vw total width */
   width: 500vw; 
-  /* This transition creates the smooth sliding animation */
   transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  /* START CHANGE: Added z-index to place slides above the clouds */
+  position: relative;
+  z-index: 2;
+  /* END CHANGE */
 }
 
 .slide {
@@ -27,7 +26,7 @@
   align-items: center;
   padding: 20px;
   box-sizing: border-box;
-  position: relative; /* For positioning child elements */
+  position: relative;
   font-family: "Marko One", serif;
   font-size: clamp(24px, 5vw, 36px);
   text-align: center;
@@ -38,18 +37,14 @@
   max-width: 80%;
 }
 
-/* ============================================== */
-/* START CORRECTION: Restore original hero layout */
-/* ============================================== */
-
-/* Override generic .slide styles for the first hero slide */
+/* Override .slide defaults for the first (hero) slide to restore original layout */
 .hero-slide {
-  display: block; /* Change from flex to block for normal document flow */
-  padding: 0;     /* Remove slide padding */
-  overflow-y: auto; /* Allow vertical scroll if content is taller than screen */
+  display: block;
+  padding: 0;
+  overflow-y: auto;
 }
 
-/* Restored .top styles to original */
+/* Original Hero Section Styles */
 .top {
   position: relative;
   z-index: 2;
@@ -61,7 +56,6 @@
   padding: 5px 10px;
 }
 
-/* Restored .tagline styles to original */
 .tagline {
   position: relative;
   z-index: 2;
@@ -72,7 +66,6 @@
   margin-top: 3vh;
 }
 
-/* Restored .earth styles to original */
 .earth {
   position: relative;
   width: 80vw;
@@ -81,10 +74,8 @@
   aspect-ratio: 1/1;
   margin-bottom: 5vh;
 }
-/* ============================================== */
-/* END CORRECTION */
-/* ============================================== */
 
+/* Backgrounds and Animations */
 .clouds {
   position: fixed;
   top: 0;
@@ -95,7 +86,7 @@
   background-repeat: repeat-x;
   background-size: contain;
   animation: slideClouds 400s linear infinite;
-  z-index: 1;
+  z-index: 1; /* The clouds are at layer 1 */
 }
 
 @keyframes slideClouds {
@@ -129,6 +120,7 @@
   to { transform: rotate(360deg); }
 }
 
+/* Face Styles */
 .eyes {
   position: relative;
   display: flex;
@@ -200,6 +192,7 @@
 .face-container.blinking-face .eyes { transform: translateY(2vw); }
 .face-container.blinking-face .smile { transform: translateY(-2.2vw) scale(1.05, 0.85); }
 
+/* Button and Vehicle Styles */
 .btn {
   width: fit-content;
   margin: auto;
@@ -227,7 +220,7 @@
 .vehicle {
   margin-top: 4vh;
   width: 60vw;
-  max-width: 300px; /* Add max-width for larger screens */
+  max-width: 300px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
