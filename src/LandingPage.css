@@ -11,10 +11,8 @@
   height: 100vh;
   width: 500vw; 
   transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-  /* START CHANGE: Added z-index to place slides above the clouds */
   position: relative;
   z-index: 2;
-  /* END CHANGE */
 }
 
 .slide {
@@ -33,18 +31,12 @@
   color: #333;
 }
 
-.info-section {
-  max-width: 80%;
-}
-
-/* Override .slide defaults for the first (hero) slide to restore original layout */
 .hero-slide {
   display: block;
   padding: 0;
   overflow-y: auto;
 }
 
-/* Original Hero Section Styles */
 .top {
   position: relative;
   z-index: 2;
@@ -75,7 +67,143 @@
   margin-bottom: 5vh;
 }
 
-/* Backgrounds and Animations */
+.slide.info-slide {
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0;
+  overflow: hidden;
+}
+
+.info-section {
+  width: 110%;
+  left: -5%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  /* background-color: #f0f0f0; */
+}
+
+.vehicle {
+  margin-top: 10vh;
+  height: 20vh;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vehicle img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+}
+
+.info-panel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  /* border-top: 2px solid black; */
+  padding: 0; /* Padding moved to inner wrappers */
+  color: #111;
+  text-align: center;
+  z-index: 1;
+  bottom: 0;
+  top: calc(10vh + 20vh);
+  transform: translateY(100%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.info-panel.visible {
+  transform: translateY(0%);
+}
+
+.ground-bg {
+  background-image: url('./assets/ground.png');
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  animation: slideGround 10s linear infinite;
+}
+
+.water-bg {
+  /* This class is now just a hook */
+}
+
+@keyframes slideGround {
+  from { background-position: -1920px 0; }
+  to { background-position: 0 0; }
+}
+
+@keyframes slideWater {
+  from { background-position: -1920px 0; }
+  to { background-position: 0 0; }
+}
+
+@keyframes seeSawTilt {
+  0% { transform: rotate(1.5deg); }
+  50% { transform: rotate(-1.5deg); }
+  100% { transform: rotate(1.5deg); }
+}
+
+@keyframes counterSeeSawTilt {
+  0% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+  100% { transform: rotate(-1.5deg); }
+}
+
+.tilting-vehicle {
+  animation: seeSawTilt 5s ease-in-out infinite;
+}
+
+/* START CHANGE: Restructured tilting animation and increased panel height */
+.tilting-panel {
+  /* Make the panel taller to cover gaps during rotation */
+  top: calc(10vh + 20vh );
+  background: transparent; /* Main panel is now a transparent container */
+}
+
+/* This new wrapper holds the tilting background and content */
+.tilting-wrapper {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  background-image: url('./assets/water.png');
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  animation: 
+    slideWater 10s linear infinite,
+    seeSawTilt 5s ease-in-out infinite;
+}
+
+/* This wrapper counter-rotates the text to keep it stable */
+.stable-text-wrapper {
+  padding: 40px 20px 20px; /* Padding now lives here */
+  animation: counterSeeSawTilt 5s ease-in-out infinite;
+}
+/* END CHANGE */
+
+
+.info-panel h2 {
+    font-family: "Londrina Shadow", cursive;
+    font-size: clamp(30px, 8vw, 60px);
+    margin-top: 0;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.info-panel p {
+    font-family: "Marko One", serif;
+    font-size: clamp(16px, 3vw, 22px);
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
 .clouds {
   position: fixed;
   top: 0;
@@ -86,12 +214,12 @@
   background-repeat: repeat-x;
   background-size: contain;
   animation: slideClouds 400s linear infinite;
-  z-index: 1; /* The clouds are at layer 1 */
+  z-index: 1;
 }
 
 @keyframes slideClouds {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 
 .logo {
@@ -120,7 +248,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Face Styles */
 .eyes {
   position: relative;
   display: flex;
@@ -192,7 +319,6 @@
 .face-container.blinking-face .eyes { transform: translateY(2vw); }
 .face-container.blinking-face .smile { transform: translateY(-2.2vw) scale(1.05, 0.85); }
 
-/* Button and Vehicle Styles */
 .btn {
   width: fit-content;
   margin: auto;
@@ -216,20 +342,3 @@
   cursor: pointer;
   font-family: "Marko One", serif;
 }
-
-.vehicle {
-  margin-top: 4vh;
-  width: 60vw;
-  max-width: 300px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 20vh;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.plane { background-image: url('./assets/plane.png'); }
-.bus { background-image: url('./assets/bus.png'); }
-.car { background-image: url('./assets/car.png'); }
-.ship { background-image: url('./assets/ship.png'); }

@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import './LandingPage.css';
 import smile from './assets/smile.png';
 import logo from './assets/logo.png';
+import plane from './assets/plane.png';
+import bus from './assets/bus.png';
+import ship from './assets/ship.png';
+import car from './assets/car.png';
 
 const LandingPage = ({ onNavigate }) => {
     const ball1Ref = useRef(null);
@@ -12,15 +16,14 @@ const LandingPage = ({ onNavigate }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const blinkIntervalRef = useRef(null);
 
-    // Refs for scrolling
     const slidesContainerRef = useRef(null);
     const currentIndexRef = useRef(0);
+    const [activeIndex, setActiveIndex] = useState(0);
     const isScrollingRef = useRef(false);
     const touchStartX = useRef(0);
     const touchStartY = useRef(0);
     const totalSlides = 5;
 
-    // Blinking effect for the face
     useEffect(() => {
         const blinkAction = () => {
             setIsBlinking(true);
@@ -36,7 +39,6 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
-    // Idle mouse effect for the face
     useEffect(() => {
         const balls = [ball1Ref.current, ball2Ref.current];
         const faceContainer = faceRef.current;
@@ -79,7 +81,6 @@ const LandingPage = ({ onNavigate }) => {
         return () => clearTimeout(idleActionRef.current);
     }, [isIdle]);
 
-    // Mouse move effect for the face
     useEffect(() => {
         const balls = [ball1Ref.current, ball2Ref.current];
         const faceContainer = faceRef.current;
@@ -120,19 +121,25 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
-    // Scroll and touch logic
     useEffect(() => {
         const changeSlide = (direction) => {
             if (isScrollingRef.current) return;
-
             const newIndex = currentIndexRef.current + direction;
 
             if (newIndex >= 0 && newIndex < totalSlides) {
                 isScrollingRef.current = true;
+                
+                setActiveIndex(-1);
                 currentIndexRef.current = newIndex;
+
                 if (slidesContainerRef.current) {
                     slidesContainerRef.current.style.transform = `translateX(-${newIndex * 100}vw)`;
                 }
+                
+                setTimeout(() => {
+                    setActiveIndex(newIndex);
+                }, 800);
+
                 setTimeout(() => {
                     isScrollingRef.current = false;
                 }, 800);
@@ -142,59 +149,41 @@ const LandingPage = ({ onNavigate }) => {
         const handleWheel = (event) => {
             event.preventDefault();
             if (isScrollingRef.current) return;
-
             const scrollValue = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
             changeSlide(scrollValue > 0 ? 1 : -1);
         };
         
-        // ====================================================================
-        // START CHANGE: Update touch handlers to prevent native browser interference
-        // ====================================================================
         const handleTouchStart = (event) => {
             touchStartX.current = event.touches[0].clientX;
             touchStartY.current = event.touches[0].clientY;
         };
 
         const handleTouchMove = (event) => {
-            // This function prevents the browser's default pull-to-refresh or vertical
-            // scroll action when the user is swiping vertically.
-            if (!touchStartX.current || !touchStartY.current) {
-                return;
-            }
+            if (!touchStartX.current || !touchStartY.current) return;
             const touchCurrentX = event.touches[0].clientX;
             const touchCurrentY = event.touches[0].clientY;
             const swipeDistanceX = Math.abs(touchStartX.current - touchCurrentX);
             const swipeDistanceY = Math.abs(touchStartY.current - touchCurrentY);
-
-            if (swipeDistanceY > swipeDistanceX) {
-                event.preventDefault();
-            }
+            if (swipeDistanceY > swipeDistanceX) event.preventDefault();
         };
 
         const handleTouchEnd = (event) => {
             if (isScrollingRef.current) return;
             const touchEndX = event.changedTouches[0].clientX;
             const touchEndY = event.changedTouches[0].clientY;
-
             const swipeDistanceX = touchStartX.current - touchEndX;
             const swipeDistanceY = touchStartY.current - touchEndY;
 
             if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
-                if (Math.abs(swipeDistanceX) > 50) {
-                    changeSlide(swipeDistanceX > 0 ? 1 : -1);
-                }
+                if (Math.abs(swipeDistanceX) > 50) changeSlide(swipeDistanceX > 0 ? 1 : -1);
             } else {
-                if (Math.abs(swipeDistanceY) > 50) {
-                    changeSlide(swipeDistanceY > 0 ? 1 : -1);
-                }
+                if (Math.abs(swipeDistanceY) > 50) changeSlide(swipeDistanceY > 0 ? 1 : -1);
             }
-            // Reset start coordinates
             touchStartX.current = 0;
             touchStartY.current = 0;
         };
         
         window.addEventListener('wheel', handleWheel, { passive: false });
-        // Add passive: false to touchstart and touchmove to allow preventDefault
         window.addEventListener('touchstart', handleTouchStart, { passive: false });
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
         window.addEventListener('touchend', handleTouchEnd);
@@ -205,9 +194,6 @@ const LandingPage = ({ onNavigate }) => {
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-        // ====================================================================
-        // END CHANGE
-        // ====================================================================
     }, []);
 
     return (
@@ -225,43 +211,70 @@ const LandingPage = ({ onNavigate }) => {
                     <main className='earth'>
                         <div className={`face-container ${isBlinking ? 'blinking-face' : ''}`} ref={faceRef}>
                             <div className="eyes">
-                                <div className={`eye ${isBlinking ? 'blinking' : ''}`}>
-                                    <div className="ball" ref={ball1Ref}></div>
-                                </div>
-                                <div className={`eye ${isBlinking ? 'blinking' : ''}`}>
-                                    <div className="ball" ref={ball2Ref}></div>
-                                </div>
+                                <div className={`eye ${isBlinking ? 'blinking' : ''}`}><div className="ball" ref={ball1Ref}></div></div>
+                                <div className={`eye ${isBlinking ? 'blinking' : ''}`}><div className="ball" ref={ball2Ref}></div></div>
                             </div>
-                            <div className="smile">
-                                <img src={smile} alt="smile graphic" />
-                            </div>
+                            <div className="smile"><img src={smile} alt="smile graphic" /></div>
                         </div>
                     </main>
                 </div>
-                <div className="slide">
+
+                <div className="slide info-slide">
                     <section className='info-section'>
-                        <p>We offer all types of tours by air.</p>
-                        <div className='vehicle plane' />
+                        <div className='vehicle'>
+                            <img src={plane} alt="Airplane Tour" />
+                        </div>
+                        <div className={`info-panel ${activeIndex === 1 ? 'visible' : ''}`}>
+                            <div className="stable-text-wrapper">
+                                <h2>Air Tours</h2>
+                                <p>Discover the world from a breathtaking perspective with our exclusive air tours.</p>
+                            </div>
+                        </div>
                     </section>
                 </div>
-                <div className="slide">
+                <div className="slide info-slide">
                     <section className='info-section'>
-                        <p>Explore the world by land with our exclusive packages.</p>
-                        <div className='vehicle bus' />
+                        <div className='vehicle'>
+                            <img src={bus} alt="Bus Tour" />
+                        </div>
+                         <div className={`info-panel ground-bg ${activeIndex === 2 ? 'visible' : ''}`}>
+                            <div className="stable-text-wrapper">
+                                <h2>Land Adventures</h2>
+                                <p>Journey through stunning landscapes and vibrant cultures on the ground.</p>
+                            </div>
+                        </div>
                     </section>
                 </div>
-                <div className="slide">
+                <div className="slide info-slide">
                     <section className='info-section'>
-                        <p>Sail the seas on an unforgettable cruise.</p>
-                        <div className='vehicle ship' />
+                        <div className='vehicle'>
+                            <img src={car} alt="Road Trip" />
+                        </div>
+                        <div className={`info-panel ground-bg ${activeIndex === 3 ? 'visible' : ''}`}>
+                            <div className="stable-text-wrapper">
+                                <h2>Start Your Journey</h2>
+                                <p>Your next great adventure is just a click away. Let's get you on the road.</p>
+                            </div>
+                        </div>
                     </section>
                 </div>
-                <div className="slide">
+                {/* START CHANGE: Added tilting-wrapper div */}
+                <div className="slide info-slide">
                     <section className='info-section'>
-                        <p>Your adventure is just a booking away.</p>
-                        <div className='vehicle car' />
+                        <div className='vehicle tilting-vehicle'>
+                            <img src={ship} alt="Cruise Ship Tour" />
+                        </div>
+                         <div className={`info-panel water-bg tilting-panel ${activeIndex === 4 ? 'visible' : ''}`}>
+                            <div className="tilting-wrapper">
+                                <div className="stable-text-wrapper">
+                                    <h2>Ocean Voyages</h2>
+                                    <p>Set sail on the open seas for an unforgettable maritime experience.</p>
+                                </div>
+                            </div>
+                        </div>
                     </section>
                 </div>
+                {/* END CHANGE */}
             </div>
             <div className="btn">
                 <button onClick={onNavigate}>Book Now</button>
