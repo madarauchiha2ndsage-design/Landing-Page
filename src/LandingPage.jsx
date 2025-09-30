@@ -17,7 +17,8 @@ const LandingPage = ({ onNavigate }) => {
     const currentIndexRef = useRef(0);
     const isScrollingRef = useRef(false);
     const touchStartX = useRef(0);
-    const totalSlides = 5; // 1 hero slide + 4 info slides
+    const touchStartY = useRef(0); // Added for vertical swipe detection
+    const totalSlides = 5;
 
     // Blinking effect for the face
     useEffect(() => {
@@ -119,7 +120,7 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
-    // Horizontal scroll and touch logic
+    // Horizontal/Vertical scroll and touch logic
     useEffect(() => {
         const changeSlide = (direction) => {
             if (isScrollingRef.current) return;
@@ -140,7 +141,6 @@ const LandingPage = ({ onNavigate }) => {
 
         const handleWheel = (event) => {
             event.preventDefault();
-            
             if (isScrollingRef.current) return;
 
             const scrollValue = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
@@ -151,23 +151,38 @@ const LandingPage = ({ onNavigate }) => {
             }
         };
 
+        // ====================================================================
+        // START CHANGE: Update touch handlers for vertical and horizontal swipes
+        // ====================================================================
         const handleTouchStart = (event) => {
             touchStartX.current = event.touches[0].clientX;
+            touchStartY.current = event.touches[0].clientY;
         };
 
         const handleTouchEnd = (event) => {
             if (isScrollingRef.current) return;
             const touchEndX = event.changedTouches[0].clientX;
-            const swipeDistance = touchStartX.current - touchEndX;
+            const touchEndY = event.changedTouches[0].clientY;
 
-            if (Math.abs(swipeDistance) > 50) {
-                if (swipeDistance > 0) {
-                    changeSlide(1);
-                } else {
-                    changeSlide(-1);
+            const swipeDistanceX = touchStartX.current - touchEndX;
+            const swipeDistanceY = touchStartY.current - touchEndY;
+
+            // Determine if the swipe was primarily horizontal or vertical
+            if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
+                // Horizontal swipe
+                if (Math.abs(swipeDistanceX) > 50) {
+                    changeSlide(swipeDistanceX > 0 ? 1 : -1);
+                }
+            } else {
+                // Vertical swipe
+                if (Math.abs(swipeDistanceY) > 50) {
+                    changeSlide(swipeDistanceY > 0 ? 1 : -1);
                 }
             }
         };
+        // ====================================================================
+        // END CHANGE
+        // ====================================================================
 
         window.addEventListener('wheel', handleWheel, { passive: false });
         window.addEventListener('touchstart', handleTouchStart);
