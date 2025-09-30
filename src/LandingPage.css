@@ -149,9 +149,9 @@
 }
 
 @keyframes counterSeeSawTilt {
-  0% { transform: rotate(-3.5deg); }
-  50% { transform: rotate(3.5deg); }
-  100% { transform: rotate(-3.5deg); }
+  0% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+  100% { transform: rotate(-1.5deg); }
 }
 
 .tilting-vehicle {
