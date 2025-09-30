@@ -2,78 +2,52 @@ import React, { useEffect, useRef, useState } from 'react';
 import './LandingPage.css';
 import smile from './assets/smile.png';
 import logo from './assets/logo.png';
-import plane from './assets/plane.png';
-import ship from './assets/ship.png';
-import car from './assets/car.png';
-import bus from './assets/bus.png';
+// Vehicle image imports are no longer needed here as they are handled by CSS background-image
+// import plane from './assets/plane.png';
+// import ship from './assets/ship.png';
+// import car from './assets/car.png';
+// import bus from './assets/bus.png';
 
 const LandingPage = ({ onNavigate }) => {
     const ball1Ref = useRef(null);
     const ball2Ref = useRef(null);
     const faceRef = useRef(null);
-    const cloudContainerRef = useRef(null);
-    const cardsRef = useRef(null);
-    const faceMoveScale = 0.2;
     const [isIdle, setIsIdle] = useState(false);
     const idleActionRef = useRef(null);
     const [isBlinking, setIsBlinking] = useState(false);
     const blinkIntervalRef = useRef(null);
 
-    const currentIndexRef = useRef(-1);
-    const isScrollingRef = useRef(false);
-
     // ====================================================================
-    // START CHANGE 1: Create a separate ref for each of the 4 sections.
+    // START CHANGE 1: Setup refs for horizontal scrolling
     // ====================================================================
-    const section1Ref = useRef(null);
-    const section2Ref = useRef(null);
-    const section3Ref = useRef(null);
-    const section4Ref = useRef(null);
-
-    // For easier access, we'll put them in an array.
-    const sectionRefs = [section1Ref, section2Ref, section3Ref, section4Ref];
+    const slidesContainerRef = useRef(null); // Ref for the container that will move
+    const currentIndexRef = useRef(0); // Start at the first slide (index 0)
+    const isScrollingRef = useRef(false); // Throttle scroll/swipe events
+    const touchStartX = useRef(0); // For tracking touch swipe start position
+    const totalSlides = 5; // 1 hero slide + 4 info slides
     // ====================================================================
     // END CHANGE 1
     // ====================================================================
 
-
-    useEffect(() => {
-        const setCardsMargin = () => {
-            if (cloudContainerRef.current && cardsRef.current) {
-                const cloudContainerHeight = cloudContainerRef.current.offsetHeight + window.innerHeight / 25;
-                cardsRef.current.style.marginTop = `${cloudContainerHeight}px`;
-            }
-        };
-
-        setCardsMargin();
-        window.addEventListener('resize', setCardsMargin);
-
-        return () => {
-            window.removeEventListener('resize', setCardsMargin);
-        };
-    }, []);
-
-
+    // Blinking effect for the face - no changes needed
     useEffect(() => {
         const blinkAction = () => {
             setIsBlinking(true);
-            setTimeout(() => {
-                setIsBlinking(false);
-            }, 700);
+            setTimeout(() => setIsBlinking(false), 700);
         };
-
         const initialTimeout = setTimeout(() => {
             blinkAction();
             blinkIntervalRef.current = setInterval(blinkAction, 3700);
         }, 3000);
-
         return () => {
             clearTimeout(initialTimeout);
             clearInterval(blinkIntervalRef.current);
         };
     }, []);
 
+    // Idle mouse effect for the face - no changes needed
     useEffect(() => {
+        // ... (This entire useEffect block for idle animation remains unchanged)
         const balls = [ball1Ref.current, ball2Ref.current];
         const faceContainer = faceRef.current;
         if (!balls[0] || !balls[1] || !faceContainer) return;
@@ -97,7 +71,7 @@ const LandingPage = ({ onNavigate }) => {
             });
 
             faceContainer.style.transitionDuration = `${randomDuration}s`;
-            faceContainer.style.transform = `translate(${xOffset * faceMoveScale}%, ${yOffset * faceMoveScale}%)`;
+            faceContainer.style.transform = `translate(${xOffset * 0.2}%, ${yOffset * 0.2}%)`;
 
             const randomDelay = 1000 + Math.random() * 1500;
             idleActionRef.current = setTimeout(scheduleRandomMove, randomDelay);
@@ -115,9 +89,12 @@ const LandingPage = ({ onNavigate }) => {
         return () => clearTimeout(idleActionRef.current);
     }, [isIdle]);
 
+    // Mouse move effect for the face - no changes needed
     useEffect(() => {
+        // ... (This entire useEffect block for mouse move remains unchanged)
         const balls = [ball1Ref.current, ball2Ref.current];
         const faceContainer = faceRef.current;
+        const faceMoveScale = 0.2;
 
         const handleMouseMove = (event) => {
             clearTimeout(idleActionRef.current);
@@ -154,146 +131,142 @@ const LandingPage = ({ onNavigate }) => {
         };
     }, []);
 
+    // ====================================================================
+    // START CHANGE 2: Replace vertical scroll logic with horizontal scroll and touch logic
+    // ====================================================================
     useEffect(() => {
-        const handleWheel = (event) => {
-            if (isScrollingRef.current) {
-                return;
-            }
+        const changeSlide = (direction) => {
+            if (isScrollingRef.current) return;
 
-            const cards = cardsRef.current?.querySelectorAll('.card');
-            if (!cards || cards.length === 0) {
-                return;
-            }
+            const newIndex = currentIndexRef.current + direction;
 
-            const scrollDirection = event.deltaY > 0 ? 'down' : 'up';
-            let nextIndex = currentIndexRef.current;
-
-            if (scrollDirection === 'down') {
-                nextIndex = Math.min(currentIndexRef.current + 1, cards.length - 1);
-            } else { // 'up'
-                nextIndex = Math.max(currentIndexRef.current - 1, -1);
-            }
-
-            if (nextIndex !== currentIndexRef.current) {
-                event.preventDefault();
+            if (newIndex >= 0 && newIndex < totalSlides) {
                 isScrollingRef.current = true;
-                currentIndexRef.current = nextIndex;
-
-                // ====================================================================
-                // START CHANGE 2: Replace the old animation logic with a generalized loop.
-                // ====================================================================
-                sectionRefs.forEach((ref, index) => {
-                    const sectionEl = ref.current;
-                    if (sectionEl) {
-                        if (index === nextIndex) {
-                            // The card we are scrolling TO: Animate it IN.
-                            sectionEl.classList.add('in-view');
-                            sectionEl.classList.remove('exit-left');
-                        } else if (index < nextIndex) {
-                            // Cards we have scrolled PAST: Animate them OUT.
-                            sectionEl.classList.add('exit-left');
-                            sectionEl.classList.remove('in-view');
-                        } else {
-                            // Upcoming cards or cards we scroll UP from: RESET them.
-                            sectionEl.classList.remove('in-view', 'exit-left');
-                        }
-                    }
-                });
-                // ====================================================================
-                // END CHANGE 2
-                // ====================================================================
-
-                if (nextIndex === -1) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                    cards[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                currentIndexRef.current = newIndex;
+                if (slidesContainerRef.current) {
+                    slidesContainerRef.current.style.transform = `translateX(-${newIndex * 100}vw)`;
                 }
-
                 setTimeout(() => {
                     isScrollingRef.current = false;
-                }, 800);
+                }, 800); // Cooldown to prevent spamming
             }
         };
 
-        window.addEventListener('wheel', handleWheel, { passive: false });
+        const handleWheel = (event) => {
+            // Use deltaY for vertical scroll and deltaX for horizontal (e.g., trackpads)
+            const scrollValue = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+            if (scrollValue > 0) { // Scrolled down or right
+                changeSlide(1);
+            } else { // Scrolled up or left
+                changeSlide(-1);
+            }
+        };
+        
+        const handleTouchStart = (event) => {
+            touchStartX.current = event.touches[0].clientX;
+        };
+        
+        const handleTouchEnd = (event) => {
+            const touchEndX = event.changedTouches[0].clientX;
+            const swipeDistance = touchStartX.current - touchEndX;
+
+            if (Math.abs(swipeDistance) > 50) { // Swipe threshold
+                if (swipeDistance > 0) { // Swiped left
+                    changeSlide(1);
+                } else { // Swiped right
+                    changeSlide(-1);
+                }
+            }
+        };
+
+        window.addEventListener('wheel', handleWheel);
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchend', handleTouchEnd);
 
         return () => {
             window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, []);
-
+    }, []); // Empty dependency array ensures this runs only once
+    // ====================================================================
+    // END CHANGE 2
+    // ====================================================================
 
     return (
-        <>
+        <div className="landing-page-wrapper">
             <div className="clouds"></div>
-            <div className='body cloud-container' ref={cloudContainerRef}>
-                <div className="top">
-                    <span>Smiles World</span>
-                    <img className='logo' src={logo} alt="" />
-                </div>
-                <div className="tagline">
-                    Explore More. Smile Wider
-                </div>
-                <main className='earth'>
-                    <div className={`face-container ${isBlinking ? 'blinking-face' : ''}`} ref={faceRef}>
-                        <div className="eyes">
-                            <div className={`eye ${isBlinking ? 'blinking' : ''}`}>
-                                <div className="ball" ref={ball1Ref}></div>
-                            </div>
-                            <div className={`eye ${isBlinking ? 'blinking' : ''}`}>
-                                <div className="ball" ref={ball2Ref}></div>
-                            </div>
-                        </div>
-                        <div className="smile">
-                            <img src={smile} alt="smile graphic" />
-                        </div>
+
+            {/* ==================================================================== */}
+            {/* START CHANGE 3: Restructure JSX for a horizontal slide layout */}
+            {/* ==================================================================== */}
+            <div className="slides-container" ref={slidesContainerRef}>
+                {/* Slide 1: Hero Section */}
+                <div className="slide hero-slide">
+                    <div className="top">
+                        <span>Smiles World</span>
+                        <img className='logo' src={logo} alt="Smiles World Logo" />
                     </div>
-                </main>
+                    <div className="tagline">
+                        Explore More. Smile Wider
+                    </div>
+                    <main className='earth'>
+                        <div className={`face-container ${isBlinking ? 'blinking-face' : ''}`} ref={faceRef}>
+                            <div className="eyes">
+                                <div className={`eye ${isBlinking ? 'blinking' : ''}`}>
+                                    <div className="ball" ref={ball1Ref}></div>
+                                </div>
+                                <div className={`eye ${isBlinking ? 'blinking' : ''}`}>
+                                    <div className="ball" ref={ball2Ref}></div>
+                                </div>
+                            </div>
+                            <div className="smile">
+                                <img src={smile} alt="smile graphic" />
+                            </div>
+                        </div>
+                    </main>
+                </div>
+
+                {/* Slide 2: Air Tours */}
+                <div className="slide">
+                    <section className='info-section'>
+                         <p>We offer all types of tours by air.</p>
+                         <div className='vehicle plane' />
+                    </section>
+                </div>
+
+                {/* Slide 3: Land Tours */}
+                <div className="slide">
+                    <section className='info-section'>
+                         <p>Explore the world by land with our exclusive packages.</p>
+                         <div className='vehicle bus' />
+                    </section>
+                </div>
+                
+                {/* Slide 4: Sea Tours */}
+                <div className="slide">
+                    <section className='info-section'>
+                         <p>Sail the seas on an unforgettable cruise.</p>
+                         <div className='vehicle ship' />
+                    </section>
+                </div>
+
+                {/* Slide 5: Booking */}
+                <div className="slide">
+                    <section className='info-section'>
+                         <p>Your adventure is just a booking away.</p>
+                         <div className='vehicle car' />
+                    </section>
+                </div>
             </div>
+            {/* ==================================================================== */}
+            {/* END CHANGE 3 */}
+            {/* ==================================================================== */}
+            
             <div className="btn">
                 <button onClick={onNavigate}>Book Now</button>
             </div>
-            <div className="cards" ref={cardsRef}>
-                <div className="cloud"></div>
-                <div className='cards-con'>
-
-                    {/* ==================================================================== */}
-                    {/* START CHANGE 3: Assign each specific ref to its section. */}
-                    {/* ==================================================================== */}
-                    <div className="card">
-                        <section className='animated-section' ref={section1Ref}>
-                             <p>We offer all types of tours by air.</p>
-                             <div className='vehicle plane' alt="" />
-                        </section>
-                    </div>
-
-                    <div className="card">
-                        <section className='animated-section' ref={section2Ref}>
-                             <p>Explore the world by land with our exclusive packages.</p>
-                             <div className='vehicle bus' alt="" />
-                        </section>
-                    </div>
-
-                    <div className="card">
-                        <section className='animated-section' ref={section3Ref}>
-                             <p>Sail the seas on an unforgettable cruise.</p>
-                             <div className='vehicle car' alt="" />
-                        </section>
-                    </div>
-
-                    <div className="card">
-                        <section className='animated-section' ref={section4Ref}>
-                             <p>Your adventure is just a booking away.</p>
-                             <div className='vehicle ship' alt="" />
-                        </section>
-                    </div>
-                    {/* ==================================================================== */}
-                    {/* END CHANGE 3 */}
-                    {/* ==================================================================== */}
-
-                </div>
-            </div>
-        </>
+        </div>
     );
 };
 

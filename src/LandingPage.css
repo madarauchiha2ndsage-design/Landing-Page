@@ -1,35 +1,55 @@
-.cloud-container {
-  width: 100vw;
-  height: fit-content;
-  overflow-x: hidden;
+/* ============================================== */
+/* Main Layout Styles */
+/* ============================================== */
+.landing-page-wrapper {
+  height: 100vh;
+  /* overflow: hidden is crucial to prevent native scrollbars */
+  overflow: hidden;
   position: relative;
-  top: 0px;
-  z-index: 3;
+  background-color: rgb(88, 180, 255); /* Background color for empty space */
 }
 
-.clouds {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 10000%;
-  background-color: rgb(88, 180, 255);
-  background-image: url("./assets/clouds2.png");
-  background-repeat: repeat-x;
-  background-size: contain;
-  animation: slideClouds 400s linear infinite;
-  z-index: 1;
+.slides-container {
+  display: flex;
+  height: 100vh;
+  /* 5 slides * 100vw each = 500vw total width */
+  width: 500vw; 
+  /* This transition creates the smooth sliding animation */
+  transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-@keyframes slideClouds {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+.slide {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative; /* For positioning child elements */
+  font-family: "Marko One", serif;
+  font-size: clamp(24px, 5vw, 36px);
+  text-align: center;
+  color: #333;
 }
 
+.info-section {
+  max-width: 80%;
+}
+
+/* ============================================== */
+/* START CORRECTION: Restore original hero layout */
+/* ============================================== */
+
+/* Override generic .slide styles for the first hero slide */
+.hero-slide {
+  display: block; /* Change from flex to block for normal document flow */
+  padding: 0;     /* Remove slide padding */
+  overflow-y: auto; /* Allow vertical scroll if content is taller than screen */
+}
+
+/* Restored .top styles to original */
 .top {
   position: relative;
   z-index: 2;
@@ -41,13 +61,7 @@
   padding: 5px 10px;
 }
 
-.logo {
-  width: clamp(20px, 13vw, 55px);
-  aspect-ratio: 1/1;
-  border: 1.5px solid black;
-  border-radius: 50%;
-}
-
+/* Restored .tagline styles to original */
 .tagline {
   position: relative;
   z-index: 2;
@@ -58,12 +72,7 @@
   margin-top: 3vh;
 }
 
-.hero {
-  position: fixed;
-  z-index: 2;
-  top: 0px;
-}
-
+/* Restored .earth styles to original */
 .earth {
   position: relative;
   width: 80vw;
@@ -71,6 +80,34 @@
   margin-top: 25px;
   aspect-ratio: 1/1;
   margin-bottom: 5vh;
+}
+/* ============================================== */
+/* END CORRECTION */
+/* ============================================== */
+
+.clouds {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 10000%;
+  background-image: url("./assets/clouds2.png");
+  background-repeat: repeat-x;
+  background-size: contain;
+  animation: slideClouds 400s linear infinite;
+  z-index: 1;
+}
+
+@keyframes slideClouds {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.logo {
+  width: clamp(20px, 13vw, 55px);
+  aspect-ratio: 1/1;
+  border: 1.5px solid black;
+  border-radius: 50%;
 }
 
 .earth::before {
@@ -88,12 +125,8 @@
 }
 
 @keyframes rotatingEarth {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .eyes {
@@ -115,8 +148,7 @@
   height: 11vw;
   display: block;
   border-radius: 50%;
-  transition: transform 0.15s ease-out, background-color 0.15s ease-out,
-    border-radius 0.15s ease-in-out;
+  transition: transform 0.15s ease-out, background-color 0.15s ease-out, border-radius 0.15s ease-in-out;
   background-color: rgb(255, 255, 255);
   overflow: hidden;
 }
@@ -140,13 +172,8 @@
   border-radius: 50% / 100%;
 }
 
-.eye.blinking .ball {
-  opacity: 0;
-}
-
-.ball.idle-transition {
-  transition: top 1s ease-in-out, left 1s ease-in-out;
-}
+.eye.blinking .ball { opacity: 0; }
+.ball.idle-transition { transition: top 1s ease-in-out, left 1s ease-in-out; }
 
 .smile {
   width: 30vw;
@@ -158,9 +185,7 @@
   transition: transform 0.15s ease-out;
 }
 
-.smile > img {
-  width: 100%;
-}
+.smile > img { width: 100%; }
 
 .face-container {
   position: absolute;
@@ -171,17 +196,9 @@
   z-index: 2;
 }
 
-.face-container.idle-transition {
-  transition: transform 1s ease-in-out;
-}
-
-.face-container.blinking-face .eyes {
-  transform: translateY(2vw);
-}
-
-.face-container.blinking-face .smile {
-  transform: translateY(-2.2vw) scale(1.05, 0.85);
-}
+.face-container.idle-transition { transition: transform 1s ease-in-out; }
+.face-container.blinking-face .eyes { transform: translateY(2vw); }
+.face-container.blinking-face .smile { transform: translateY(-2.2vw) scale(1.05, 0.85); }
 
 .btn {
   width: fit-content;
@@ -207,75 +224,19 @@
   font-family: "Marko One", serif;
 }
 
-.cards {
-  position: relative;
-  z-index: 3;
-  font-family: "Marko One", serif;
-}
-
-.card {
-  width: 100vw;
-  height: 100vh;
-  font-size: 30px;
-  text-align: center;
-}
-
-.cloud {
-  width: 100vw;
-  height: 31vh;
-  /* background-image: url("./assets/cloudtran.png"); */
-  background-size: cover;
-  filter: brightness(1.3);
-  background-color: transparent;
-}
-
-.cards-con {
-}
-
 .vehicle {
-  margin-top: 2vh;
-  width: 50vw;
+  margin-top: 4vh;
+  width: 60vw;
+  max-width: 300px; /* Add max-width for larger screens */
   background-size: contain;
   background-repeat: no-repeat;
-  height: 10vh;
-  margin: auto;
+  background-position: center;
+  height: 20vh;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.plane
-{
-  background-image: url('./assets/plane.png');
-}
-
-.bus
-{
-  background-image: url('./assets/bus.png');
-}
-
-.car
-{
-  background-image: url('./assets/car.png');
-}
-
-.ship
-{
-  background-image: url('./assets/ship.png');
-}
-
-
-.animated-section {
-  transform: translateX(100vw);
-  opacity: 0;
-  transition: transform .5s ease-in, opacity 0.6s ease;
-}
-
-
-.animated-section.in-view {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-
-.animated-section.exit-left {
-  transform: translateX(-100vw);
-  opacity: 0;
-}
+.plane { background-image: url('./assets/plane.png'); }
+.bus { background-image: url('./assets/bus.png'); }
+.car { background-image: url('./assets/car.png'); }
+.ship { background-image: url('./assets/ship.png'); }
