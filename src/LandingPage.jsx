@@ -4,7 +4,7 @@ import smile from './assets/smile.png';
 import logo from './assets/logo.png';
 import plane from './assets/plane.png';
 import bus from './assets/bus.png';
-import ship from './assets/ship.png';
+import ship from './assets/ship - Copy.png';
 import car from './assets/car.png';
 
 const LandingPage = ({ onNavigate }) => {
@@ -264,7 +264,7 @@ const LandingPage = ({ onNavigate }) => {
                         <div className='vehicle tilting-vehicle'>
                             <img src={ship} alt="Cruise Ship Tour" />
                         </div>
-                         <div className={`info-panel water-bg tilting-panel ${activeIndex === 4 ? 'visible' : ''}`}>
+                         <div className={`info-panel ship-info water-bg tilting-panel ${activeIndex === 4 ? 'visible' : ''}`}>
                             <div className="tilting-wrapper">
                                 <div className="stable-text-wrapper">
                                     <h2>Ocean Voyages</h2>

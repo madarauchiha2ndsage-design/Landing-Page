@@ -111,7 +111,7 @@
   text-align: center;
   z-index: 1;
   bottom: 0;
-  top: calc(10vh + 20vh);
+  top: calc(26.5vh);
   transform: translateY(100%);
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
@@ -161,8 +161,9 @@
 /* START CHANGE: Restructured tilting animation and increased panel height */
 .tilting-panel {
   /* Make the panel taller to cover gaps during rotation */
-  top: calc(10vh + 20vh );
+  top: calc(27.5vh );
   background: transparent; /* Main panel is now a transparent container */
+  z-index: 2;
 }
 
 /* This new wrapper holds the tilting background and content */
@@ -213,7 +214,7 @@
   background-image: url("./assets/clouds2.png");
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slideClouds 400s linear infinite;
+  animation: slideClouds 650s linear infinite;
   z-index: 1;
 }
 
@@ -238,7 +239,7 @@
   height: 100%;
   background-image: url("./assets/hero_main2.png");
   background-size: cover;
-  animation: rotatingEarth 15s linear infinite;
+  animation: rotatingEarth 25s linear infinite;
   z-index: 1;
   transform-origin: calc(50% - 4px) 50%;
 }
@@ -341,4 +342,16 @@
   font-weight: bold;
   cursor: pointer;
   font-family: "Marko One", serif;
+}
+
+
+@media (max-width: 768px) {
+  .vehicle {
+    height: 12vh;
+  }
+
+  .info-panel
+  {
+    top: calc(20vh);
+  }
 }
