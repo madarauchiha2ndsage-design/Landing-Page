@@ -122,7 +122,7 @@
 }
 
 .ground-bg {
-  background-image: url('./assets/ground.png');
+  background-image: url('./assets/groundv2.png');
   background-size: auto 100%;
   background-repeat: repeat-x;
   animation: slideGround 10s linear infinite;
@@ -173,8 +173,8 @@
   position: relative;
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-  background-image: url('./assets/water.png');
-  background-size: auto 100%;
+  background-image: url('./assets/waterv2.png');
+  background-size: cover;
   background-repeat: repeat-x;
   animation: 
     slideWater 10s linear infinite,
