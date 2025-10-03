@@ -18,21 +18,25 @@
   background-repeat: no-repeat;
   background-position: center;
   transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  /* background-color: rgb(88, 180, 255); */
 }
 
 .transition-cloud.left {
-  background-image: url('./assets/cloud1.png');
-  scale: 1.5;
+  background-image: url('./assets/new_cloud1.png');
+  /* scale: 1.5; */
   left: 0;
   transform: translateX(-150%);
+  background-color: rgb(88, 180, 255);
+  background-size: cover;
 }
 
 .transition-cloud.right {
-  background-image: url('./assets/cloud2n.png');
-  scale: 1.5;
+  background-image: url('./assets/new_cloud2.png');
+  /* scale: 1.5; */
   right: 0;
   /* We flip this cloud horizontally for a more dynamic look */
   transform: translateX(150%);
+  background-size: cover;
 }
 
 /* When the transition is active, slide the clouds into view */
